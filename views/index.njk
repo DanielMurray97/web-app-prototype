@@ -1,4 +1,7 @@
 {% extends  layout %}
 {% block  content %}
-  <h1>{{message}}</h1>
+  <h1 class="govuk-heading-xl">{{message}}</h1>
+  {{ govukButton({
+    text: "Example button text"
+}) }}
 {% endblock %}

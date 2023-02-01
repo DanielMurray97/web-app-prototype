@@ -7,13 +7,13 @@ dotenv.config();
 const app: Express = express();
 const port = process.env.PORT;
 
-nunjucks.configure('views', {
+nunjucks.configure(['node_modules/govuk-frontend','views'], {
   autoescape: true,
   express: app,
 });
 
 app.get('/', (req: Request, res: Response) => {
-  res.render('index.njk', { layout: 'layout.njk', message: 'I am update' });
+  res.render('index.njk', { layout: 'layout.njk', message: 'Hello' });
 });
 
 app.listen(port, () => {

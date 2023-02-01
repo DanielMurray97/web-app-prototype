@@ -1,6 +1,11 @@
+{% extends "govuk/template.njk" %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 <!doctype html>
 <html  lang="en">
   <head>
+    {% block css %}
+    <link rel="stylesheet" href="/styles/main.css" />
+    {% endblock %}
     <title>{{ title }}</title>
   </head>
   <body>
