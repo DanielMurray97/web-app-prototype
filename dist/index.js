@@ -9,12 +9,12 @@ const nunjucks_1 = __importDefault(require("nunjucks"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT;
-nunjucks_1.default.configure('views', {
+nunjucks_1.default.configure(['node_modules/govuk-frontend', 'views'], {
     autoescape: true,
     express: app,
 });
 app.get('/', (req, res) => {
-    res.render('index.njk', { layout: 'layout.njk', message: 'I am update' });
+    res.render('index.njk', { layout: 'layout.njk', message: 'Hello' });
 });
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
