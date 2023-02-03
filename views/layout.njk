@@ -16,31 +16,28 @@
 {% endblock %}
 {% block content %}
   <h1 class="govuk-heading-xl">Default page template</h1>
-  {{message}}
-  {{message}}
-  {{message}}
-  {{message}}
-  {{message}}
-  {{message}}
-  {{message}}
-  {{message}}
+  <p>{{message}}</p>
 {{ govukBreadcrumbs({
   items: [
     {
       text: "Home",
-      href: "home"
+      href: "/"
     },
     {
-      text: "Passports, travel and living abroad",
-      href: "passports"
+      text: "Data",
+      href: "data"
     },
     {
-      text: "Travel abroad",
-      href: "Travel abroad"
+      text: "Form",
+      href: "form"
     }
   ]
 }) }}
+
+{% block section %}{% endblock %}
+
 {% endblock %}
+
 {% block bodyEnd %}
   {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
   <script src="/govuk-frontend/all.js"></script>

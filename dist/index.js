@@ -24,10 +24,13 @@ nunjucks_1.default.configure(['node_modules/govuk-frontend/', 'views'], {
     express: app,
 });
 app.get('/', (req, res) => {
-    res.render('layout.njk', { message: 'instant' });
+    res.render('layout.njk', { message: 'I am Home, sent from server to / endpoint' });
 });
-app.get('/home', (req, res) => {
-    res.render('index.njk', { layout: 'layout.njk', message: 'Home' });
+app.get('/data', (req, res) => {
+    res.render('data.njk', { layout: 'layout.njk', message: 'I am Data, sent from server to /data endpoint' });
+});
+app.get('/form', (req, res) => {
+    res.render('form.njk', { layout: 'layout.njk', message: 'I am Form, sent from server to /form endpoint' });
 });
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
