@@ -1,0 +1,5 @@
+https://stackoverflow.com/questions/35530930/nodemon-not-working-bash-nodemon-command-not-found - nodemon not working on macOS
+
+https://dev.to/cassiolacerda/automatically-refresh-the-browser-on-node-express-server-changes-x1f680-1k0o - Adding browser refresh after server refresh
+
+https://github.com/remy/nodemon/blob/master/doc/sample-nodemon.md - how to configure nodemon.json to customise behavior of nodemon

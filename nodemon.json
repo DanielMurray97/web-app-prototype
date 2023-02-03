@@ -1,0 +1,4 @@
+{
+  "watch": ["views/*", "dist/index.js"],
+  "ext": "js, njk"
+}
