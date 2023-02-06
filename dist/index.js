@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -9,6 +18,14 @@ const nunjucks_1 = __importDefault(require("nunjucks"));
 const livereload_1 = __importDefault(require("livereload"));
 const connect_livereload_1 = __importDefault(require("connect-livereload"));
 const body_parser_1 = __importDefault(require("body-parser"));
+const { Pool } = require('pg');
+const pool = new Pool({
+    user: process.env.PGUSER,
+    host: process.env.PGHOST,
+    database: process.env.PGDATABASE,
+    password: process.env.PGPASSWORD,
+    port: process.env.PGPORT,
+});
 dotenv_1.default.config();
 const liveReloadServer = livereload_1.default.createServer();
 liveReloadServer.server.once('connection', () => {
@@ -26,14 +43,30 @@ nunjucks_1.default.configure(['node_modules/govuk-frontend/', 'views'], {
     autoescape: true,
     express: app,
 });
-app.get('/', (req, res) => {
-    res.render('layout.njk', { message: 'I am Home, sent from server to / endpoint' });
-});
+app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const allJournal = yield pool.query("SELECT * FROM journal_entry");
+        console.log(allJournal);
+        res.render('data.njk', {
+            layout: 'layout.njk',
+            rows: allJournal.rows[0].full_name,
+        });
+    }
+    catch (err) {
+        console.error(err.message);
+    }
+}));
 app.get('/data', (req, res) => {
-    res.render('data.njk', { layout: 'layout.njk', message: 'I am Data, sent from server to /data endpoint' });
+    res.render('data.njk', {
+        layout: 'layout.njk',
+        message: 'I am Data, sent from server to /data endpoint',
+    });
 });
 app.get('/form', (req, res) => {
-    res.render('form.njk', { layout: 'layout.njk', message: 'I am Form, sent from server to /form endpoint' });
+    res.render('form.njk', {
+        layout: 'layout.njk',
+        message: 'I am Form, sent from server to /form endpoint',
+    });
 });
 app.post('/', (req, res) => {
     console.log(req.body);

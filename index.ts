@@ -4,6 +4,15 @@ import nunjucks from 'nunjucks';
 import livereload from 'livereload';
 import connectLiveReload from 'connect-livereload';
 import bodyParser from 'body-parser';
+const { Pool } = require('pg');
+
+const pool = new Pool({
+  user: process.env.PGUSER,
+  host: process.env.PGHOST,
+  database: process.env.PGDATABASE,
+  password: process.env.PGPASSWORD,
+  port: process.env.PGPORT,
+});
 
 dotenv.config();
 
@@ -17,7 +26,7 @@ liveReloadServer.server.once('connection', () => {
 const app: Express = express();
 const port = process.env.PORT;
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(connectLiveReload());
 
@@ -26,16 +35,34 @@ nunjucks.configure(['node_modules/govuk-frontend/', 'views'], {
   express: app,
 });
 
-app.get('/', (req: Request, res: Response) => {
-  res.render('layout.njk', { message: 'I am Home, sent from server to / endpoint'});
+app.get('/', async (req: Request, res: Response) => {
+  try {
+    const allJournal = await pool.query("SELECT * FROM journal_entry");
+    console.log(allJournal);
+
+    res.render('data.njk', {
+      layout: 'layout.njk',
+      rows: allJournal.rows[0].full_name,
+    });
+  } catch (err: any) {
+    console.error(err.message)
+  }
+
 });
 
+
 app.get('/data', (req: Request, res: Response) => {
-  res.render('data.njk', { layout: 'layout.njk', message: 'I am Data, sent from server to /data endpoint' });
+  res.render('data.njk', {
+    layout: 'layout.njk',
+    message: 'I am Data, sent from server to /data endpoint',
+  });
 });
 
 app.get('/form', (req: Request, res: Response) => {
-  res.render('form.njk', { layout: 'layout.njk', message: 'I am Form, sent from server to /form endpoint' });
+  res.render('form.njk', {
+    layout: 'layout.njk',
+    message: 'I am Form, sent from server to /form endpoint',
+  });
 });
 
 app.post('/', (req: Request, res: Response) => {
