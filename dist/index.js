@@ -27,37 +27,37 @@ const pool = new pg_1.Pool({
     password: process.env.PGPASSWORD,
     port: 5432, // TS won't allow environment variable to be put here
 });
-// Check Postgres connection by running empty query 
-pool.query('', (err, res) => {
+// Check Postgres connection by running empty query
+pool.query("", (err, res) => {
     if (err) {
         console.error(err);
     }
     else {
-        console.log('Postgres connected to server...');
+        console.log("Postgres connected to server...");
     }
 });
 const liveReloadServer = livereload_1.default.createServer();
-liveReloadServer.server.once('connection', () => {
+liveReloadServer.server.once("connection", () => {
     setTimeout(() => {
-        liveReloadServer.refresh('/');
+        liveReloadServer.refresh("/");
     }, 100);
 });
 const app = (0, express_1.default)();
 const port = process.env.PORT;
 app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: true }));
-app.use(express_1.default.static('public'));
+app.use(express_1.default.static("public"));
 app.use((0, connect_livereload_1.default)());
-nunjucks_1.default.configure(['node_modules/govuk-frontend/', 'views'], {
+nunjucks_1.default.configure(["node_modules/govuk-frontend/", "views"], {
     autoescape: true,
     express: app,
 });
-app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const allJournal = yield pool.query('SELECT * FROM journal_entry'); // https://youtu.be/ldYcgPKEZC8?t=1159
+        const allJournal = yield pool.query("SELECT * FROM journal_entry"); // https://youtu.be/ldYcgPKEZC8?t=1159
         console.log(allJournal);
-        res.render('data.njk', {
-            layout: 'layout.njk',
+        res.render("data.njk", {
+            layout: "layout.njk",
             rows: allJournal.rows[0].full_name,
         });
     }
@@ -65,22 +65,25 @@ app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         console.error(err.message);
     }
 }));
-app.get('/data', (req, res) => {
-    res.render('data.njk', {
-        layout: 'layout.njk',
-        message: 'I am Data, sent from server to /data endpoint',
+app.get("/data", (req, res) => {
+    res.render("data.njk", {
+        layout: "layout.njk",
+        message: "I am Data, sent from server to /data endpoint",
     });
 });
-app.get('/form', (req, res) => {
-    res.render('form.njk', {
-        layout: 'layout.njk',
-        message: 'I am Form, sent from server to /form endpoint',
-    });
-});
-app.post('/', (req, res) => {
-    console.log(req.body);
-    res.send(req.body);
-});
+app.post("/form", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { full_name } = req.body;
+        const { title } = req.body;
+        const { journal_entry } = req.body;
+        const newJournal = yield pool.query(`INSERT INTO journal_entry (full_name, title, journal_entry) VALUES($1,$2,$3)`, [full_name, title, journal_entry]);
+        res.json(newJournal);
+        // `INSERT INTO journal_entry (full_name, title, journal_entry) VALUES (${full_name}, ${title}, ${journal_entry})`
+    }
+    catch (err) {
+        console.error(err.message);
+    }
+}));
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
 });
