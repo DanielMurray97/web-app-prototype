@@ -18,15 +18,24 @@ const nunjucks_1 = __importDefault(require("nunjucks"));
 const livereload_1 = __importDefault(require("livereload"));
 const connect_livereload_1 = __importDefault(require("connect-livereload"));
 const body_parser_1 = __importDefault(require("body-parser"));
-const { Pool } = require('pg');
-const pool = new Pool({
+const pg_1 = require("pg");
+dotenv_1.default.config();
+const pool = new pg_1.Pool({
     user: process.env.PGUSER,
     host: process.env.PGHOST,
     database: process.env.PGDATABASE,
     password: process.env.PGPASSWORD,
-    port: process.env.PGPORT,
+    port: 5432, // TS won't allow environment variable to be put here
 });
-dotenv_1.default.config();
+// Check Postgres connection by running empty query 
+pool.query('', (err, res) => {
+    if (err) {
+        console.error(err);
+    }
+    else {
+        console.log('Postgres connected to server...');
+    }
+});
 const liveReloadServer = livereload_1.default.createServer();
 liveReloadServer.server.once('connection', () => {
     setTimeout(() => {
@@ -45,7 +54,7 @@ nunjucks_1.default.configure(['node_modules/govuk-frontend/', 'views'], {
 });
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const allJournal = yield pool.query("SELECT * FROM journal_entry");
+        const allJournal = yield pool.query('SELECT * FROM journal_entry'); // https://youtu.be/ldYcgPKEZC8?t=1159
         console.log(allJournal);
         res.render('data.njk', {
             layout: 'layout.njk',
