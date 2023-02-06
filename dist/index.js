@@ -8,6 +8,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const nunjucks_1 = __importDefault(require("nunjucks"));
 const livereload_1 = __importDefault(require("livereload"));
 const connect_livereload_1 = __importDefault(require("connect-livereload"));
+const body_parser_1 = __importDefault(require("body-parser"));
 dotenv_1.default.config();
 const liveReloadServer = livereload_1.default.createServer();
 liveReloadServer.server.once('connection', () => {
@@ -17,6 +18,8 @@ liveReloadServer.server.once('connection', () => {
 });
 const app = (0, express_1.default)();
 const port = process.env.PORT;
+app.use(body_parser_1.default.json());
+app.use(body_parser_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.static('public'));
 app.use((0, connect_livereload_1.default)());
 nunjucks_1.default.configure(['node_modules/govuk-frontend/', 'views'], {
@@ -31,6 +34,10 @@ app.get('/data', (req, res) => {
 });
 app.get('/form', (req, res) => {
     res.render('form.njk', { layout: 'layout.njk', message: 'I am Form, sent from server to /form endpoint' });
+});
+app.post('/', (req, res) => {
+    console.log(req.body);
+    res.send(req.body);
 });
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);

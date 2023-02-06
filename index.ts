@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import nunjucks from 'nunjucks';
 import livereload from 'livereload';
 import connectLiveReload from 'connect-livereload';
+import bodyParser from 'body-parser';
 
 dotenv.config();
 
@@ -15,6 +16,8 @@ liveReloadServer.server.once('connection', () => {
 
 const app: Express = express();
 const port = process.env.PORT;
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('public'));
 app.use(connectLiveReload());
 
@@ -33,6 +36,11 @@ app.get('/data', (req: Request, res: Response) => {
 
 app.get('/form', (req: Request, res: Response) => {
   res.render('form.njk', { layout: 'layout.njk', message: 'I am Form, sent from server to /form endpoint' });
+});
+
+app.post('/', (req: Request, res: Response) => {
+  console.log(req.body);
+  res.send(req.body);
 });
 
 app.listen(port, () => {
