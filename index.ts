@@ -26,12 +26,16 @@ pool.query("", (err, res) => {
   }
 });
 
+// Add liveReloadServer for hot module replacement (better dev experience)
+
 const liveReloadServer = livereload.createServer();
 liveReloadServer.server.once("connection", () => {
   setTimeout(() => {
     liveReloadServer.refresh("/");
   }, 100);
 });
+
+// Initialise server
 
 const app: Express = express();
 const port = process.env.PORT;
@@ -40,30 +44,36 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(connectLiveReload());
 
+// Configure nunjucks templating engine
+
 nunjucks.configure(["node_modules/govuk-frontend/", "views"], {
   autoescape: true,
   express: app,
 });
 
+// Routes/Endpoints
+
+
 app.get("/", async (req: Request, res: Response) => {
+  res.render("layout.njk");
+});
+
+app.get("/data", async (req: Request, res: Response) => {
   try {
     const allJournal = await pool.query("SELECT * FROM journal_entry"); // https://youtu.be/ldYcgPKEZC8?t=1159
-    console.log(allJournal);
-
+    console.log(allJournal.rows);
+  
     res.render("data.njk", {
       layout: "layout.njk",
-      rows: allJournal.rows[0].full_name,
+      data: allJournal.rows,
     });
   } catch (err: any) {
     console.error(err.message);
   }
 });
 
-app.get("/data", (req: Request, res: Response) => {
-  res.render("data.njk", {
-    layout: "layout.njk",
-    message: "I am Data, sent from server to /data endpoint",
-  });
+app.get("/form", async (req: Request, res: Response) => {
+  res.render("form.njk", {layout: "layout.njk"});
 });
 
 app.post("/form", async (req: Request, res: Response) => {
@@ -76,11 +86,12 @@ app.post("/form", async (req: Request, res: Response) => {
       [full_name, title, journal_entry]
     );
     res.json(newJournal);
-    // `INSERT INTO journal_entry (full_name, title, journal_entry) VALUES (${full_name}, ${title}, ${journal_entry})`
   } catch (err: any) {
     console.error(err.message);
   }
 });
+
+// Start server and listen for requests
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);

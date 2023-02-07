@@ -32,6 +32,7 @@
     "build": "concurrently \"npx tsc --watch\" \"sass --watch scss/main.scss dist/styles/main.css\"",
     "start": "node dist/index.js",
     "dev": "concurrently  \"npx tsc --watch\" \"npx nodemon dist/index.js\"",
-    "connect-db": "npx ts-node db.ts"
+    "connect-db": "npx ts-node db.ts",
+    "start-postgres": "/opt/homebrew/opt/postgresql@14/bin/postgres -D /opt/homebrew/var/postgresql@14"
   }
 }
