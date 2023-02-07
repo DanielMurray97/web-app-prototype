@@ -117,7 +117,14 @@ app.get('/data/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* (
         console.error(err.message);
     }
 }));
-app.put('/data/edit/:id', (req, res) => { });
+app.put('/data/edit/:id', (req, res) => {
+    console.log("Edit request received");
+    const { full_name } = req.body;
+    const { title } = req.body;
+    const { journal_entry } = req.body;
+    console.log(full_name, title, journal_entry, req.params.id);
+    res.redirect('/data');
+});
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
 });

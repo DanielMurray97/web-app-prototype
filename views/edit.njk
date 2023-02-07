@@ -17,16 +17,17 @@
     <tbody>
         {% for element in data %}
         {% if id == element.journal_entry_id %}
-        <tr style="text-align:center; font-size: 25px;">
-            <td style="padding: 40px">{{element.journal_entry_id}}
-            <td><input></input></td>
-            <td><input></input></td>
-            <td><input></input></td>
-            <td>
-              {% set editUrl = ["/data/", element.journal_entry_id] | join %}
-              <a type="submit" href={{editUrl}} style="padding: 10px;">Edit</a>
-              
-              {% set url = ["/data/", element.journal_entry_id, "?_method=DELETE"] | join %} {# https://michaelheap.com/nunjucks-concatenate-string/ #}
+        {% set url = ["/data/edit/", element.journal_entry_id, "?_method=PUT"] | join %} {# https://michaelheap.com/nunjucks-concatenate-string/ #}
+        <form method="POST" action={{url}}> 
+            <tr style="text-align:center; font-size: 25px;">
+                <td style="padding: 40px">{{element.journal_entry_id}}
+                <td><input value={{element.title}} name="title"></td>
+                <td><input value={{element.journal_entry}} name="journal_entry"></td>
+                <td><input value={{element.full_name}} name="full_name"></td>
+                <td>
+                    <button type="submit" style="padding: 10px;">Update</button>
+        </form>
+        {% set url = ["/data/", element.journal_entry_id, "?_method=DELETE"] | join %} {# https://michaelheap.com/nunjucks-concatenate-string/ #}
               <form method="POST" action={{url}}> 
                 <button type="submit" style="padding: 10px;">Delete</button>
               </form>
