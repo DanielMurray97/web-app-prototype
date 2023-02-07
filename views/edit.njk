@@ -1,7 +1,6 @@
 {% extends "layout.njk" %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 
-
 {% block section %}
 
 <div style="font-size: 55px; margin-bottom: 20px">Postgres Data Table</div>
@@ -17,6 +16,23 @@
     </thead>
     <tbody>
         {% for element in data %}
+        {% if id == element.journal_entry_id %}
+        <tr style="text-align:center; font-size: 25px;">
+            <td style="padding: 40px">{{element.journal_entry_id}}
+            <td><input></input></td>
+            <td><input></input></td>
+            <td><input></input></td>
+            <td>
+              {% set editUrl = ["/data/", element.journal_entry_id] | join %}
+              <a type="submit" href={{editUrl}} style="padding: 10px;">Edit</a>
+              
+              {% set url = ["/data/", element.journal_entry_id, "?_method=DELETE"] | join %} {# https://michaelheap.com/nunjucks-concatenate-string/ #}
+              <form method="POST" action={{url}}> 
+                <button type="submit" style="padding: 10px;">Delete</button>
+              </form>
+            </td>
+        </tr>
+        {% else %}
         <tr style="text-align:center; font-size: 25px;">
             <td style="padding: 40px">{{element.journal_entry_id}}
             <td>{{element.title}}</td>
@@ -32,44 +48,9 @@
               </form>
             </td>
         </tr>
+        {% endif %}
         {% endfor %}
     </tbody>
 </table>
-
-{# {{ govukTable({
-  caption: "Postgres Data",
-  captionClasses: "govuk-table__caption--m",   {{element.journal_entry_id}}
-  firstCellIsHeader: false,
-  head: [
-    {
-      text: "journal_entry_id"
-    },
-    {
-      text: "title"
-    },
-    {
-      text: "journal_entry"
-    },
-    {
-      text: "full_name"
-    }    
-  ],
-  rows: [
-    [
-      {
-        text: "First 6 weeks"
-      },
-      {
-        text: "£109.80 per week"
-      },
-       {
-        text: "First 6 weeks"
-      },
-      {
-        text: "£109.80 per week"
-      }
-    ]
-  ]
-}) }} #}
 
 {% endblock %}
