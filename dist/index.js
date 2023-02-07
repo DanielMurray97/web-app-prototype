@@ -89,10 +89,11 @@ app.post('/form', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         console.error(err.message);
     }
 }));
-app.delete('/form', (req, res) => {
-    console.log('Delete request received');
-    res.json({ "sent": "back" });
-});
+// app.delete('/data/:id', (req: Request, res: Response) => {
+//   console.log('Delete request received');
+//   console.log(req.body.id);
+//   res.json({"sent": "back"});
+// });
 // Start server and listen for requests
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);

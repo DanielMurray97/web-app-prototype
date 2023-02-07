@@ -5,7 +5,7 @@
 {% block section %}
 
 <div style="font-size: 55px; margin-bottom: 20px">Postgres Data Table</div>
-<form method="POST" action="/form?_method=DELETE">
+
 <table style="border-collapse: separate; border: solid black 1px; border-spacing: 30px;">
     <thead>
         <tr style="text-align:center; font-weight: bold; font-size: 30px;">
@@ -23,16 +23,18 @@
             <td>{{element.journal_entry}}</td>
             <td>{{element.full_name}}</td>
             <td>
-              <button type="submit" style="padding: 10px;">Delete</button>
+              <form method="POST" action='/data/:id' ?_method=DELETE`> 
+                <button type="submit" style="padding: 10px;">Delete</button>
+              </form>
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-</form>
+
 {# {{ govukTable({
   caption: "Postgres Data",
-  captionClasses: "govuk-table__caption--m",
+  captionClasses: "govuk-table__caption--m",   {{element.journal_entry_id}}
   firstCellIsHeader: false,
   head: [
     {

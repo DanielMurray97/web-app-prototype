@@ -92,10 +92,13 @@ app.post('/form', async (req: Request, res: Response) => {
   }
 });
 
-app.delete('/form', (req: Request, res: Response) => {
-  console.log('Delete request received');
-  res.json({"sent": "back"});
-});
+
+
+// app.delete('/data/:id', (req: Request, res: Response) => {
+//   console.log('Delete request received');
+//   console.log(req.body.id);
+//   res.json({"sent": "back"});
+// });
 
 // Start server and listen for requests
 
