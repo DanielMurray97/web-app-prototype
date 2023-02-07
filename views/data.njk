@@ -23,7 +23,8 @@
             <td>{{element.journal_entry}}</td>
             <td>{{element.full_name}}</td>
             <td>
-              <form method="POST" action='/data/:id' ?_method=DELETE`> 
+              {% set url = ["/data/", element.journal_entry_id, "?_method=DELETE"] | join %} {# https://michaelheap.com/nunjucks-concatenate-string/ #}
+              <form method="POST" action={{url}}> 
                 <button type="submit" style="padding: 10px;">Delete</button>
               </form>
             </td>

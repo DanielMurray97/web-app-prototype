@@ -89,20 +89,22 @@ app.post("/form", async (req: Request, res: Response) => {
     res.render("form.njk", { layout: "layout.njk" });
   } catch (err: any) {
     console.error(err.message);
+    res.redirect('/');
   }
 });
 
-app.delete("/form", async (req: Request, res: Response) => {
+app.delete("/data/:id", async (req: Request, res: Response) => {
   try {
     console.log("Delete request received");
-    const { journal_entry_id } = req.body;
+    const journal_entry_id = req.params.id;
     const newJournal = await pool.query(
       `DELETE FROM journal_entry WHERE journal_entry_id = $1`,
       [journal_entry_id]
     );
-    res.render("form.njk", { layout: "layout.njk" });
+    res.redirect('/data');
   } catch (err: any) {
     console.error(err.message);
+    res.redirect('/');
   }
 });
 

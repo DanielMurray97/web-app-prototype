@@ -87,17 +87,19 @@ app.post("/form", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     catch (err) {
         console.error(err.message);
+        res.redirect('/');
     }
 }));
-app.delete("/form", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.delete("/data/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log("Delete request received");
-        const { journal_entry_id } = req.body;
+        const journal_entry_id = req.params.id;
         const newJournal = yield pool.query(`DELETE FROM journal_entry WHERE journal_entry_id = $1`, [journal_entry_id]);
-        res.render("form.njk", { layout: "layout.njk" });
+        res.redirect('/data');
     }
     catch (err) {
         console.error(err.message);
+        res.redirect('/');
     }
 }));
 app.listen(port, () => {
