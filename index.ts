@@ -1,11 +1,11 @@
-import express, { Express, Request, Response } from 'express';
-import dotenv from 'dotenv';
-import nunjucks from 'nunjucks';
-import livereload from 'livereload';
-import connectLiveReload from 'connect-livereload';
-import bodyParser from 'body-parser';
-import { Pool } from 'pg';
-import methodOverride from 'method-override';
+import express, { Express, Request, Response } from "express";
+import dotenv from "dotenv";
+import nunjucks from "nunjucks";
+import livereload from "livereload";
+import connectLiveReload from "connect-livereload";
+import bodyParser from "body-parser";
+import { Pool } from "pg";
+import methodOverride from "method-override";
 
 dotenv.config();
 
@@ -19,20 +19,20 @@ const pool = new Pool({
 
 // Check Postgres connection by running empty query
 
-pool.query('', (err, res) => {
+pool.query("", (err, res) => {
   if (err) {
     console.error(err);
   } else {
-    console.log('Postgres connected to server...');
+    console.log("Postgres connected to server...");
   }
 });
 
 // Add liveReloadServer for hot module replacement (better dev experience)
 
 const liveReloadServer = livereload.createServer();
-liveReloadServer.server.once('connection', () => {
+liveReloadServer.server.once("connection", () => {
   setTimeout(() => {
-    liveReloadServer.refresh('/');
+    liveReloadServer.refresh("/");
   }, 100);
 });
 
@@ -42,30 +42,30 @@ const app: Express = express();
 const port = process.env.PORT;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(methodOverride('_method'))
-app.use(express.static('public'));
+app.use(methodOverride("_method"));
+app.use(express.static("public"));
 app.use(connectLiveReload());
 
 // Configure nunjucks templating engine
 
-nunjucks.configure(['node_modules/govuk-frontend/', 'views'], {
+nunjucks.configure(["node_modules/govuk-frontend/", "views"], {
   autoescape: true,
   express: app,
 });
 
 // Routes/Endpoints
 
-app.get('/', async (req: Request, res: Response) => {
-  res.render('layout.njk');
+app.get("/", async (req: Request, res: Response) => {
+  res.render("layout.njk");
 });
 
-app.get('/data', async (req: Request, res: Response) => {
+app.get("/data", async (req: Request, res: Response) => {
   try {
-    const allJournal = await pool.query('SELECT * FROM journal_entry'); // https://youtu.be/ldYcgPKEZC8?t=1159
+    const allJournal = await pool.query("SELECT * FROM journal_entry"); // https://youtu.be/ldYcgPKEZC8?t=1159
     console.log(allJournal.rows);
 
-    res.render('data.njk', {
-      layout: 'layout.njk',
+    res.render("data.njk", {
+      layout: "layout.njk",
       data: allJournal.rows,
     });
   } catch (err: any) {
@@ -73,11 +73,11 @@ app.get('/data', async (req: Request, res: Response) => {
   }
 });
 
-app.get('/form', async (req: Request, res: Response) => {
-  res.render('form.njk', { layout: 'layout.njk' });
+app.get("/form", async (req: Request, res: Response) => {
+  res.render("form.njk", { layout: "layout.njk" });
 });
 
-app.post('/form', async (req: Request, res: Response) => {
+app.post("/form", async (req: Request, res: Response) => {
   try {
     const { full_name } = req.body;
     const { title } = req.body;
@@ -86,21 +86,25 @@ app.post('/form', async (req: Request, res: Response) => {
       `INSERT INTO journal_entry (full_name, title, journal_entry) VALUES($1,$2,$3)`,
       [full_name, title, journal_entry]
     );
-    res.render('form.njk', { layout: 'layout.njk' });
+    res.render("form.njk", { layout: "layout.njk" });
   } catch (err: any) {
     console.error(err.message);
   }
 });
 
-
-
-// app.delete('/data/:id', (req: Request, res: Response) => {
-//   console.log('Delete request received');
-//   console.log(req.body.id);
-//   res.json({"sent": "back"});
-// });
-
-// Start server and listen for requests
+app.delete("/form", async (req: Request, res: Response) => {
+  try {
+    console.log("Delete request received");
+    const { journal_entry_id } = req.body;
+    const newJournal = await pool.query(
+      `DELETE FROM journal_entry WHERE journal_entry_id = $1`,
+      [journal_entry_id]
+    );
+    res.render("form.njk", { layout: "layout.njk" });
+  } catch (err: any) {
+    console.error(err.message);
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
