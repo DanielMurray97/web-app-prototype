@@ -19,6 +19,7 @@ const livereload_1 = __importDefault(require("livereload"));
 const connect_livereload_1 = __importDefault(require("connect-livereload"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const pg_1 = require("pg");
+const method_override_1 = __importDefault(require("method-override"));
 dotenv_1.default.config();
 const pool = new pg_1.Pool({
     user: process.env.PGUSER,
@@ -28,19 +29,19 @@ const pool = new pg_1.Pool({
     port: 5432, // TS won't allow environment variable to be put here
 });
 // Check Postgres connection by running empty query
-pool.query("", (err, res) => {
+pool.query('', (err, res) => {
     if (err) {
         console.error(err);
     }
     else {
-        console.log("Postgres connected to server...");
+        console.log('Postgres connected to server...');
     }
 });
 // Add liveReloadServer for hot module replacement (better dev experience)
 const liveReloadServer = livereload_1.default.createServer();
-liveReloadServer.server.once("connection", () => {
+liveReloadServer.server.once('connection', () => {
     setTimeout(() => {
-        liveReloadServer.refresh("/");
+        liveReloadServer.refresh('/');
     }, 100);
 });
 // Initialise server
@@ -48,23 +49,24 @@ const app = (0, express_1.default)();
 const port = process.env.PORT;
 app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: true }));
-app.use(express_1.default.static("public"));
+app.use((0, method_override_1.default)('_method'));
+app.use(express_1.default.static('public'));
 app.use((0, connect_livereload_1.default)());
 // Configure nunjucks templating engine
-nunjucks_1.default.configure(["node_modules/govuk-frontend/", "views"], {
+nunjucks_1.default.configure(['node_modules/govuk-frontend/', 'views'], {
     autoescape: true,
     express: app,
 });
 // Routes/Endpoints
-app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.render("layout.njk");
+app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.render('layout.njk');
 }));
-app.get("/data", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get('/data', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const allJournal = yield pool.query("SELECT * FROM journal_entry"); // https://youtu.be/ldYcgPKEZC8?t=1159
+        const allJournal = yield pool.query('SELECT * FROM journal_entry'); // https://youtu.be/ldYcgPKEZC8?t=1159
         console.log(allJournal.rows);
-        res.render("data.njk", {
-            layout: "layout.njk",
+        res.render('data.njk', {
+            layout: 'layout.njk',
             data: allJournal.rows,
         });
     }
@@ -72,21 +74,25 @@ app.get("/data", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         console.error(err.message);
     }
 }));
-app.get("/form", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.render("form.njk", { layout: "layout.njk" });
+app.get('/form', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.render('form.njk', { layout: 'layout.njk' });
 }));
-app.post("/form", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post('/form', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { full_name } = req.body;
         const { title } = req.body;
         const { journal_entry } = req.body;
         const newJournal = yield pool.query(`INSERT INTO journal_entry (full_name, title, journal_entry) VALUES($1,$2,$3)`, [full_name, title, journal_entry]);
-        res.render("form.njk", { layout: "layout.njk" });
+        res.render('form.njk', { layout: 'layout.njk' });
     }
     catch (err) {
         console.error(err.message);
     }
 }));
+app.delete('/form', (req, res) => {
+    console.log('Delete request received');
+    res.json({ "sent": "back" });
+});
 // Start server and listen for requests
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
