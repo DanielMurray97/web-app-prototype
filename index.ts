@@ -85,7 +85,7 @@ app.post("/form", async (req: Request, res: Response) => {
       `INSERT INTO journal_entry (full_name, title, journal_entry) VALUES($1,$2,$3)`,
       [full_name, title, journal_entry]
     );
-    res.json(newJournal);
+    res.render("form.njk", {layout: "layout.njk"});
   } catch (err: any) {
     console.error(err.message);
   }

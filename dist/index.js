@@ -81,7 +81,7 @@ app.post("/form", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { title } = req.body;
         const { journal_entry } = req.body;
         const newJournal = yield pool.query(`INSERT INTO journal_entry (full_name, title, journal_entry) VALUES($1,$2,$3)`, [full_name, title, journal_entry]);
-        res.json(newJournal);
+        res.render("form.njk", { layout: "layout.njk" });
     }
     catch (err) {
         console.error(err.message);
