@@ -35,6 +35,7 @@
     "start": "node dist/index.js",
     "dev": "concurrently  \"npx tsc --watch\" \"npx nodemon dist/index.js\"",
     "connect-db": "npx ts-node db.ts",
-    "start-postgres": "/opt/homebrew/opt/postgresql@14/bin/postgres -D /opt/homebrew/var/postgresql@14"
+    "start-postgres-mac": "brew services start postgresql@14",
+    "stop-postgres-mac": "brew services stop postgresql@14"
   }
 }

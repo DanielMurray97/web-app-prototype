@@ -3,56 +3,67 @@
 
 {% block section %}
 
-<div style="font-size: 55px; margin-bottom: 20px">Postgres Data Table</div>
+  <div style="font-size: 55px; margin-bottom: 20px">Postgres Data Table</div>
 
-<table style="border-collapse: separate; border: solid black 1px; border-spacing: 30px;">
+  <table style="border-collapse: separate; border: solid black 1px; border-spacing: 30px;">
     <thead>
-        <tr style="text-align:center; font-weight: bold; font-size: 30px;">
-            <td>journal_entry_id</td>
-            <td>title</td>
-            <td>journal_entry</td>
-            <td>full_name</td>
-        </tr>
+      <tr style="text-align:center; font-weight: bold; font-size: 30px;">
+        <td>journal_entry_id</td>
+        <td>title</td>
+        <td>journal_entry</td>
+        <td>full_name</td>
+      </tr>
     </thead>
     <tbody>
-        {% for element in data %}
+      {% for element in data %}
         {% if id == element.journal_entry_id %}
-        {% set editSubmitURL = ["/data/edit/", element.journal_entry_id, "?_method=PUT"] | join %} {# https://michaelheap.com/nunjucks-concatenate-string/ #}
-        <form method="POST" action={{editSubmitURL}}> 
+          {% set editSubmitURL = ["/data/edit/", element.journal_entry_id, "?_method=PUT"] | join %}
+          {# https://michaelheap.com/nunjucks-concatenate-string/ #}
+          <form method="POST" action={{editSubmitURL}}>
             <tr style="text-align:center; font-size: 25px;">
-                <td style="padding: 40px">{{element.journal_entry_id}}</td>
-                <td><input required value={{element.title}} name="title"></td>
-                <td><input required value={{element.journal_entry}} name="journal_entry"></td>
-                <td><input required value={{element.full_name}} name="full_name"></td>
-                <td><button type="submit" style="padding: 10px; background-color: lightblue;">Update</button></td>
-                <td>
-                  {% set deleteUrl = ["/data/", element.journal_entry_id, "?_method=DELETE"] | join %} {# https://michaelheap.com/nunjucks-concatenate-string/ #}
-                  <form method="POST" action={{deleteUrl}}> 
-                    <button type="submit" style="padding: 10px; background-color: pink;">Delete</button>
-                  </form>
-                </td>
-        </form>
+              <td style="padding: 40px">{{element.journal_entry_id}}</td>
+              <td>
+                <input required value={{element.title}} name="title">
+              </td>
+              <td>
+                <input required value={{element.journal_entry}} name="journal_entry">
+              </td>
+              <td>
+                <input required value={{element.full_name}} name="full_name">
+              </td>
+              <td>
+                <button type="submit" style="padding: 10px; background-color: lightblue;">Update</button>
+              </td>
+              <td>
+                {% set deleteUrl = ["/data/", element.journal_entry_id, "?_method=DELETE"] | join %}
+                {# https://michaelheap.com/nunjucks-concatenate-string/ #}
+                <form method="POST" action={{deleteUrl}}>
+                  <button type="submit" style="padding: 10px; background-color: pink;">Delete</button>
+                </form>
+              </td>
+            </tr>
+          </form>
         {% else %}
-        <tr style="text-align:center; font-size: 25px;">
+          <tr style="text-align:center; font-size: 25px;">
             <td style="padding: 40px">{{element.journal_entry_id}}</td>
             <td>{{element.title}}</td>
             <td>{{element.journal_entry}}</td>
             <td>{{element.full_name}}</td>
-              {% set editPageURL = ["/data/", element.journal_entry_id] | join %}
+            {% set editPageURL = ["/data/", element.journal_entry_id] | join %}
             <td>
               <button type="submit" style="padding: 10px; background-color: lightblue;">
                 <a style="text-decoration: none;" href={{editPageURL}}>Edit</a>
               </button>
             </td>
             <td>
-              <form method="POST" action={{deleteUrl}}> 
+              <form method="POST" action={{deleteUrl}}>
                 <button type="submit" style="padding: 10px; background-color: pink;">Delete</button>
               </form>
             </td>
-        </tr>
+          </tr>
         {% endif %}
-        {% endfor %}
+      {% endfor %}
     </tbody>
-</table>
+  </table>
 
 {% endblock %}
