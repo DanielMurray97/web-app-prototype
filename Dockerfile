@@ -23,4 +23,3 @@ CMD ["npm", "start"]
 
 # Then: build image --> docker build -t typescript-crud-app-image .
 # Next: build + start container --> docker run -d -p 8000:8000 --name typescript-crud-app-container typescript-crud-app-image
-#
