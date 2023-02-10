@@ -9,11 +9,13 @@ import methodOverride from "method-override";
 
 dotenv.config();
 
+// Create connection Pool to Postgres
+
 const pool = new Pool({
-  user: process.env.PGUSER,
-  host: process.env.PGHOST,
-  database: process.env.PGDATABASE,
-  password: process.env.PGPASSWORD,
+  user: process.env.POSTGRES_USER,
+  host: process.env.POSTGRES_HOST,
+  database: process.env.POSTGRES_DB,
+  password: process.env.POSTGRES_PASSWORD,
   port: 5432, // TS won't allow environment variable to be put here
 });
 
@@ -141,6 +143,8 @@ app.put("/data/edit/:id", async (req: Request, res: Response) => {
     res.redirect("/");
   }
 });
+
+// Have server listen for requests on specified port 
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
