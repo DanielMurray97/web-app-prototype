@@ -9,9 +9,9 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=journal
-      - POSTGRES_HOST=db
+      - POSTGRES_HOST=db # https://stackoverflow.com/questions/33357567/econnrefused-for-postgres-on-nodejs-with-dockers
     volumes:
-      - ./db:/var/lib/postgresql/data
+      # - ./db:/var/lib/postgresql/data # --> uncomment to create db folder in root dir and persist data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
   web:
     container_name: compose-web-container
