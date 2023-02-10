@@ -34,9 +34,6 @@
   "scripts": {
     "dev": "concurrently  \"npx tsc --watch\" \"npx nodemon dist/index.js\"",
     "build": "npx tsc && sass scss/main.scss public/styles/main.css",
-    "start": "npm run build && node dist/index.js",
-    "connect-db": "npx ts-node db.ts",
-    "start-postgres-mac": "brew services start postgresql@14",
-    "stop-postgres-mac": "brew services stop postgresql@14"
+    "start": "npm run build && node dist/index.js"
   }
 }
