@@ -4,12 +4,12 @@ services:
     container_name: compose-db-container
     image: postgres
     ports:
-      - '5432:5432'
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=journal
-      - POSTGRES_HOST=db # https://stackoverflow.com/questions/33357567/econnrefused-for-postgres-on-nodejs-with-dockers
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_HOST=${POSTGRES_HOST} # https://stackoverflow.com/questions/33357567/econnrefused-for-postgres-on-nodejs-with-dockers
     volumes:
       # - ./db:/var/lib/postgresql/data # --> uncomment to create db folder in root dir and persist data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -18,7 +18,7 @@ services:
     restart: always
     build: .
     ports:
-      - '8000:8000'
+      - ${PORT}:${PORT}
     depends_on:
       - db
     volumes:
