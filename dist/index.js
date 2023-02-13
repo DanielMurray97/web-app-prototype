@@ -36,19 +36,19 @@ const pool = new pg_1.Pool({
     port: 5432, // TS won't allow environment variable to be put here
 });
 // Check Postgres connection by running empty query
-pool.query("", (err, res) => {
+pool.query('', (err, res) => {
     if (err) {
         console.error(err);
     }
     else {
-        console.log("Postgres connected to server...");
+        console.log('Postgres connected to server...');
     }
 });
 // Add liveReloadServer for hot module replacement (better dev experience)
 const liveReloadServer = livereload_1.default.createServer();
-liveReloadServer.server.once("connection", () => {
+liveReloadServer.server.once('connection', () => {
     setTimeout(() => {
-        liveReloadServer.refresh("/");
+        liveReloadServer.refresh('/');
     }, 100);
 });
 // Initialise server
@@ -56,66 +56,68 @@ const app = (0, express_1.default)();
 const port = process.env.PORT;
 app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: true }));
-app.use((0, method_override_1.default)("_method"));
-app.use(express_1.default.static("public"));
+app.use((0, method_override_1.default)('_method'));
+app.use(express_1.default.static('public'));
 app.use((0, connect_livereload_1.default)());
 // Configure nunjucks templating engine
-nunjucks_1.default.configure(["node_modules/govuk-frontend/", "views"], {
+nunjucks_1.default.configure(['node_modules/govuk-frontend/', 'views'], {
     autoescape: true,
     express: app,
 });
 // Routes/Endpoints
-app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.render("layout.njk");
+app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.render('layout.njk');
 }));
-app.get("/data", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get('/data', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const allJournal = yield pool.query("SELECT * FROM journal_entry"); // https://youtu.be/ldYcgPKEZC8?t=1159
-        console.log(allJournal.rows);
-        res.render("data.njk", {
-            layout: "layout.njk",
-            data: allJournal.rows,
+        const allJournal = yield pool.query('SELECT * FROM journal_entry'); // https://youtu.be/ldYcgPKEZC8?t=1159
+        console.log(allJournal.rows); //
+        const data = transform_data(allJournal.rows);
+        console.log(data);
+        res.render('data.njk', {
+            layout: 'layout.njk',
+            data: data,
         });
     }
     catch (err) {
         console.error(err.message);
     }
 }));
-app.get("/form", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.render("form.njk", { layout: "layout.njk" });
+app.get('/form', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.render('form.njk', { layout: 'layout.njk' });
 }));
-app.post("/form", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post('/form', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { full_name } = req.body;
         const { title } = req.body;
         const { journal_entry } = req.body;
         const newJournal = yield pool.query(`INSERT INTO journal_entry (full_name, title, journal_entry) VALUES($1,$2,$3)`, [full_name, title, journal_entry]);
-        res.render("form.njk", { layout: "layout.njk" });
+        res.render('form.njk', { layout: 'layout.njk' });
     }
     catch (err) {
         console.error(err.message);
-        res.redirect("/");
+        res.redirect('/');
     }
 }));
-app.delete("/data/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.delete('/data/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log("Delete request received");
+        console.log('Delete request received');
         const journal_entry_id = req.params.id;
         const newJournal = yield pool.query(`DELETE FROM journal_entry WHERE journal_entry_id = $1`, [journal_entry_id]);
-        res.redirect("/data");
+        res.redirect('/data');
     }
     catch (err) {
         console.error(err.message);
-        res.redirect("/");
+        res.redirect('/');
     }
 }));
-app.get("/data/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("edit mode");
+app.get('/data/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('edit mode');
     try {
-        const allJournal = yield pool.query("SELECT * FROM journal_entry"); // https://youtu.be/ldYcgPKEZC8?t=1159
+        const allJournal = yield pool.query('SELECT * FROM journal_entry'); // https://youtu.be/ldYcgPKEZC8?t=1159
         console.log(allJournal.rows);
-        res.render("edit.njk", {
-            layout: "layout.njk",
+        res.render('edit.njk', {
+            layout: 'layout.njk',
             data: allJournal.rows,
             id: req.params.id,
         });
@@ -124,22 +126,35 @@ app.get("/data/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* (
         console.error(err.message);
     }
 }));
-app.put("/data/edit/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.put('/data/edit/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log("Edit request received");
+        console.log('Edit request received');
         const id = req.params.id;
         const { full_name } = req.body;
         const { title } = req.body;
         const { journal_entry } = req.body;
         const newJournal = yield pool.query(`UPDATE journal_entry SET full_name = $1, title=$2, journal_entry=$3 WHERE journal_entry_id=$4;`, [full_name, title, journal_entry, id]);
-        res.redirect("/data");
+        res.redirect('/data');
     }
     catch (err) {
         console.error(err.message);
-        res.redirect("/");
+        res.redirect('/');
     }
 }));
-// Have server listen for requests on specified port 
+// Have server listen for requests on specified port
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
 });
+function transform_data(postgres_data) {
+    const transformed_data = [];
+    postgres_data.forEach((element) => {
+        const inner_arr = [
+            { text: element.journal_entry_id },
+            { text: element.full_name },
+            { text: element.title },
+            { text: element.journal_entry },
+        ];
+        transformed_data.push(inner_arr);
+    });
+    return transformed_data;
+}

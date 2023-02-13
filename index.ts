@@ -1,11 +1,11 @@
-import express, { Express, Request, Response } from "express";
-import dotenv from "dotenv";
-import nunjucks from "nunjucks";
-import livereload from "livereload";
-import connectLiveReload from "connect-livereload";
-import bodyParser from "body-parser";
-import { Pool } from "pg";
-import methodOverride from "method-override";
+import express, { Express, Request, Response } from 'express';
+import dotenv from 'dotenv';
+import nunjucks from 'nunjucks';
+import livereload from 'livereload';
+import connectLiveReload from 'connect-livereload';
+import bodyParser from 'body-parser';
+import { Pool } from 'pg';
+import methodOverride from 'method-override';
 
 dotenv.config();
 
@@ -30,20 +30,20 @@ const pool = new Pool({
 
 // Check Postgres connection by running empty query
 
-pool.query("", (err, res) => {
+pool.query('', (err, res) => {
   if (err) {
     console.error(err);
   } else {
-    console.log("Postgres connected to server...");
+    console.log('Postgres connected to server...');
   }
 });
 
 // Add liveReloadServer for hot module replacement (better dev experience)
 
 const liveReloadServer = livereload.createServer();
-liveReloadServer.server.once("connection", () => {
+liveReloadServer.server.once('connection', () => {
   setTimeout(() => {
-    liveReloadServer.refresh("/");
+    liveReloadServer.refresh('/');
   }, 100);
 });
 
@@ -53,42 +53,45 @@ const app: Express = express();
 const port = process.env.PORT;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(methodOverride("_method"));
-app.use(express.static("public"));
+app.use(methodOverride('_method'));
+app.use(express.static('public'));
 app.use(connectLiveReload());
 
 // Configure nunjucks templating engine
 
-nunjucks.configure(["node_modules/govuk-frontend/", "views"], {
+nunjucks.configure(['node_modules/govuk-frontend/', 'views'], {
   autoescape: true,
   express: app,
 });
 
 // Routes/Endpoints
 
-app.get("/", async (req: Request, res: Response) => {
-  res.render("layout.njk");
+app.get('/', async (req: Request, res: Response) => {
+  res.render('layout.njk');
 });
 
-app.get("/data", async (req: Request, res: Response) => {
+app.get('/data', async (req: Request, res: Response) => {
   try {
-    const allJournal = await pool.query("SELECT * FROM journal_entry"); // https://youtu.be/ldYcgPKEZC8?t=1159
-    console.log(allJournal.rows);
+    const allJournal = await pool.query('SELECT * FROM journal_entry'); // https://youtu.be/ldYcgPKEZC8?t=1159
+    console.log(allJournal.rows); //
 
-    res.render("data.njk", {
-      layout: "layout.njk",
-      data: allJournal.rows,
+    const data = transform_data(allJournal.rows);
+    console.log(data);
+
+    res.render('data.njk', {
+      layout: 'layout.njk',
+      data: data,
     });
   } catch (err: any) {
     console.error(err.message);
   }
 });
 
-app.get("/form", async (req: Request, res: Response) => {
-  res.render("form.njk", { layout: "layout.njk" });
+app.get('/form', async (req: Request, res: Response) => {
+  res.render('form.njk', { layout: 'layout.njk' });
 });
 
-app.post("/form", async (req: Request, res: Response) => {
+app.post('/form', async (req: Request, res: Response) => {
   try {
     const { full_name } = req.body;
     const { title } = req.body;
@@ -97,35 +100,35 @@ app.post("/form", async (req: Request, res: Response) => {
       `INSERT INTO journal_entry (full_name, title, journal_entry) VALUES($1,$2,$3)`,
       [full_name, title, journal_entry]
     );
-    res.render("form.njk", { layout: "layout.njk" });
+    res.render('form.njk', { layout: 'layout.njk' });
   } catch (err: any) {
     console.error(err.message);
-    res.redirect("/");
+    res.redirect('/');
   }
 });
 
-app.delete("/data/:id", async (req: Request, res: Response) => {
+app.delete('/data/:id', async (req: Request, res: Response) => {
   try {
-    console.log("Delete request received");
+    console.log('Delete request received');
     const journal_entry_id = req.params.id;
     const newJournal = await pool.query(
       `DELETE FROM journal_entry WHERE journal_entry_id = $1`,
       [journal_entry_id]
     );
-    res.redirect("/data");
+    res.redirect('/data');
   } catch (err: any) {
     console.error(err.message);
-    res.redirect("/");
+    res.redirect('/');
   }
 });
 
-app.get("/data/:id", async (req: Request, res: Response) => {
-  console.log("edit mode");
+app.get('/data/:id', async (req: Request, res: Response) => {
+  console.log('edit mode');
   try {
-    const allJournal = await pool.query("SELECT * FROM journal_entry"); // https://youtu.be/ldYcgPKEZC8?t=1159
+    const allJournal = await pool.query('SELECT * FROM journal_entry'); // https://youtu.be/ldYcgPKEZC8?t=1159
     console.log(allJournal.rows);
-    res.render("edit.njk", {
-      layout: "layout.njk",
+    res.render('edit.njk', {
+      layout: 'layout.njk',
       data: allJournal.rows,
       id: req.params.id,
     });
@@ -134,9 +137,9 @@ app.get("/data/:id", async (req: Request, res: Response) => {
   }
 });
 
-app.put("/data/edit/:id", async (req: Request, res: Response) => {
+app.put('/data/edit/:id', async (req: Request, res: Response) => {
   try {
-    console.log("Edit request received");
+    console.log('Edit request received');
     const id = req.params.id;
     const { full_name } = req.body;
     const { title } = req.body;
@@ -146,15 +149,32 @@ app.put("/data/edit/:id", async (req: Request, res: Response) => {
       `UPDATE journal_entry SET full_name = $1, title=$2, journal_entry=$3 WHERE journal_entry_id=$4;`,
       [full_name, title, journal_entry, id]
     );
-    res.redirect("/data");
+    res.redirect('/data');
   } catch (err: any) {
     console.error(err.message);
-    res.redirect("/");
+    res.redirect('/');
   }
 });
 
-// Have server listen for requests on specified port 
+// Have server listen for requests on specified port
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });
+
+function transform_data(postgres_data: any) {
+
+  const transformed_data: any = [];
+
+  postgres_data.forEach((element: any) => {
+    const inner_arr = [
+      { text: element.journal_entry_id },
+      { text: element.full_name },
+      { text: element.title },
+      { text: element.journal_entry },
+    ];
+    transformed_data.push(inner_arr);
+  });
+
+  return transformed_data;
+}
