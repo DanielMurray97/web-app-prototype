@@ -21,6 +21,13 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const pg_1 = require("pg");
 const method_override_1 = __importDefault(require("method-override"));
 dotenv_1.default.config();
+// Check if running server + postgres in production or development
+const environment = process.env.NODE_ENV;
+console.log(environment);
+if (process.env.NODE_ENV === 'development') {
+    process.env.POSTGRES_HOST = 'localhost';
+}
+console.log(process.env.POSTGRES_HOST);
 // Create connection Pool to Postgres
 const pool = new pg_1.Pool({
     user: process.env.POSTGRES_USER,

@@ -3,7 +3,7 @@
 
 {% block section %}
 
-  <div style="font-size: 55px; margin-bottom: 20px">Postgres Data Table</div>
+  {# <div style="font-size: 55px; margin-bottom: 20px">Postgres Data Table</div>
 
   <table style="border-collapse: separate; border: solid black 1px; border-spacing: 30px;">
     <thead>
@@ -28,7 +28,6 @@
             </button>
           </td>
           {% set url = ["/data/", element.journal_entry_id, "?_method=DELETE"] | join %}
-          {# https://michaelheap.com/nunjucks-concatenate-string/ #}
           <td>
             <form method="POST" action={{url}}>
               <button type="submit" style="padding: 10px; background-color: pink;">Delete</button>
@@ -37,6 +36,22 @@
         </tr>
       {% endfor %}
     </tbody>
-  </table>
+  </table> #}
+
+  {{ govukTable({
+  caption: "Dates and amounts",
+  captionClasses: "govuk-table__caption--m",
+  firstCellIsHeader: true,
+  head: [
+    {
+      text: "Date"
+    },
+    {
+      text: "Amount"
+    }
+  ],
+  rows: testData
+  
+}) }}
 
 {% endblock %}

@@ -9,6 +9,15 @@ import methodOverride from "method-override";
 
 dotenv.config();
 
+// Check if running server + postgres in production or development
+
+const environment = process.env.NODE_ENV;
+console.log(`Running the server and database in ${environment} environment`);
+
+if (process.env.NODE_ENV === 'development') {
+  process.env.POSTGRES_HOST = 'localhost'
+}
+
 // Create connection Pool to Postgres
 
 const pool = new Pool({

@@ -32,8 +32,8 @@
     "typescript": "^4.9.5"
   },
   "scripts": {
-    "dev": "concurrently  \"npx tsc --watch\" \"npx nodemon dist/index.js\"",
+    "dev": "concurrently  \"npx tsc --watch\" \"NODE_ENV=development npx nodemon dist/index.js\"",
     "build": "npx tsc && sass scss/main.scss public/styles/main.css",
-    "start": "npm run build && node dist/index.js"
+    "start": "npm run build && NODE_ENV=production node dist/index.js"
   }
 }
