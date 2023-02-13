@@ -15,7 +15,7 @@ const environment = process.env.NODE_ENV;
 console.log(`Running the server and database in ${environment} environment`);
 
 if (process.env.NODE_ENV === 'development') {
-  process.env.POSTGRES_HOST = 'localhost'
+  process.env.POSTGRES_HOST = 'localhost';
 }
 
 // Create connection Pool to Postgres
