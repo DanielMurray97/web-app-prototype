@@ -80,7 +80,8 @@ app.get('/data', async (req: Request, res: Response) => {
 
     res.render('data.njk', {
       layout: 'layout.njk',
-      data: data,
+      transformedData: data,
+      rawData: allJournal.rows
     });
   } catch (err: any) {
     console.error(err.message);
@@ -127,9 +128,13 @@ app.get('/data/:id', async (req: Request, res: Response) => {
   try {
     const allJournal = await pool.query('SELECT * FROM journal_entry'); // https://youtu.be/ldYcgPKEZC8?t=1159
     console.log(allJournal.rows);
+
+    const data = transform_data(allJournal.rows);
+
     res.render('edit.njk', {
       layout: 'layout.njk',
-      data: allJournal.rows,
+      transformedData: data,
+      rawData: allJournal.rows,
       id: req.params.id,
     });
   } catch (err: any) {

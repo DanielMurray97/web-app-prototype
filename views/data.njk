@@ -3,9 +3,9 @@
 
 {% block section %}
 
-  {# <div style="font-size: 55px; margin-bottom: 20px">Postgres Data Table</div>
+  <div style="font-size: 55px; margin-bottom: 20px">Postgres Data Table</div>
 
-  <table style="border-collapse: separate; border: solid black 1px; border-spacing: 30px;">
+  <table style="border-collapse: separate; border: solid black 1px; border-spacing: 30px; margin-bottom: 20px;">
     <thead>
       <tr style="text-align:center; font-weight: bold; font-size: 30px;">
         <td>journal_entry_id</td>
@@ -15,7 +15,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for element in data %}
+      {% for element in rawData %}
         <tr style="text-align:center; font-size: 25px;">
           <td style="padding: 40px">{{element.journal_entry_id}}</td>
           <td>{{element.title}}</td>
@@ -36,10 +36,11 @@
         </tr>
       {% endfor %}
     </tbody>
-  </table> #}
+  </table>
 
   {{ govukTable({
-  
+  caption: "Dates and amounts",
+  captionClasses: "govuk-table__caption--m",
   firstCellIsHeader: true,
   head: [
     {
@@ -55,7 +56,7 @@
       text: "Journal Entry"
     }
   ],
-  rows: data
+  rows: transformedData
   
 }) }}
 

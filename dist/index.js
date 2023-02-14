@@ -76,7 +76,8 @@ app.get('/data', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         console.log(data);
         res.render('data.njk', {
             layout: 'layout.njk',
-            data: data,
+            transformedData: data,
+            rawData: allJournal.rows
         });
     }
     catch (err) {
@@ -116,9 +117,11 @@ app.get('/data/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const allJournal = yield pool.query('SELECT * FROM journal_entry'); // https://youtu.be/ldYcgPKEZC8?t=1159
         console.log(allJournal.rows);
+        const data = transform_data(allJournal.rows);
         res.render('edit.njk', {
             layout: 'layout.njk',
-            data: allJournal.rows,
+            transformedData: data,
+            rawData: allJournal.rows,
             id: req.params.id,
         });
     }
