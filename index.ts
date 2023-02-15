@@ -70,18 +70,29 @@ app.get('/', async (req: Request, res: Response) => {
   res.render('layout.njk');
 });
 
+interface JournalDatapoint {
+  journal_entry_id: string
+  full_name: string
+  title: string
+  journal_entry: string
+}
+
+type JournalDataType = JournalDatapoint[];
+
+
+
 app.get('/data', async (req: Request, res: Response) => {
   try {
     const allJournal = await pool.query('SELECT * FROM journal_entry'); // https://youtu.be/ldYcgPKEZC8?t=1159
-    console.log(allJournal.rows); //
+    console.log(allJournal.rows);
 
-    const data = transform_data(allJournal.rows);
-    console.log(data);
+    const database_rows: JournalDataType = allJournal.rows;
+    const transformedData = transform_data(database_rows);
 
     res.render('data.njk', {
       layout: 'layout.njk',
-      transformedData: data,
-      rawData: allJournal.rows
+      transformedData: transformedData,
+      rawData: database_rows
     });
   } catch (err: any) {
     console.error(err.message);
@@ -167,12 +178,18 @@ app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });
 
-function transform_data(postgres_data: any) {
+interface MacroDataShape {
+  text: string;
+}
+type MacroDataRow = MacroDataShape[];
+type MacroData = MacroDataRow[]
 
-  const transformed_data: any = [];
+function transform_data(postgres_data: JournalDataType) {
 
-  postgres_data.forEach((element: any) => {
-    const inner_arr = [
+  const transformed_data: MacroData = [];
+
+  postgres_data.forEach((element: JournalDatapoint) => {
+    const inner_arr: MacroDataRow = [
       { text: element.journal_entry_id },
       { text: element.full_name },
       { text: element.title },
@@ -183,3 +200,5 @@ function transform_data(postgres_data: any) {
 
   return transformed_data;
 }
+
+

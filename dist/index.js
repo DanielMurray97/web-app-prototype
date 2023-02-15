@@ -71,13 +71,13 @@ app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 app.get('/data', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const allJournal = yield pool.query('SELECT * FROM journal_entry'); // https://youtu.be/ldYcgPKEZC8?t=1159
-        console.log(allJournal.rows); //
-        const data = transform_data(allJournal.rows);
-        console.log(data);
+        console.log(allJournal.rows);
+        const database_rows = allJournal.rows;
+        const transformedData = transform_data(database_rows);
         res.render('data.njk', {
             layout: 'layout.njk',
-            transformedData: data,
-            rawData: allJournal.rows
+            transformedData: transformedData,
+            rawData: database_rows
         });
     }
     catch (err) {
