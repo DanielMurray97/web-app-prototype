@@ -11,7 +11,7 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_HOST=${POSTGRES_HOST} # https://stackoverflow.com/questions/33357567/econnrefused-for-postgres-on-nodejs-with-dockers
     volumes:
-      # - ./db:/var/lib/postgresql/data # --> uncomment to create db folder in root dir and persist data
+      #- ./db:/var/lib/postgresql/data # --> uncomment to create db folder in root dir and persist data after stopping containers
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
   web:
     container_name: compose-web-container
