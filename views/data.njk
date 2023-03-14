@@ -3,24 +3,24 @@
 
 {% block section %}
 
-  <div style="font-size: 55px; margin-bottom: 20px">Postgres Data Table</div>
+  <div style="font-size: 55px; margin-bottom: 20px">Postgres Data Table - HTML Table</div>
 
   <table style="border-collapse: separate; border: solid black 1px; border-spacing: 30px; margin-bottom: 20px;">
     <thead>
       <tr style="text-align:center; font-weight: bold; font-size: 30px;">
-        <td>journal_entry_id</td>
-        <td>title</td>
-        <td>journal_entry</td>
-        <td>full_name</td>
+        <td>Journal Entry id</td>
+        <td>Full name</td>
+        <td>Title</td>
+        <td>Journal Entry</td>
       </tr>
     </thead>
     <tbody>
       {% for element in rawData %}
         <tr style="text-align:center; font-size: 25px;">
           <td style="padding: 40px">{{element.journal_entry_id}}</td>
+          <td>{{element.full_name}}</td>
           <td>{{element.title}}</td>
           <td>{{element.journal_entry}}</td>
-          <td>{{element.full_name}}</td>
           {% set editPageURL = ["/data/", element.journal_entry_id] | join %}
           <td>
             <button type="submit" style="padding: 10px; background-color: lightblue;">
@@ -39,7 +39,7 @@
   </table>
 
   {{ govukTable({
-  caption: "Dates and amounts",
+  caption: "Postgres Data Table - Nunjucks Macro Table",
   captionClasses: "govuk-table__caption--m",
   firstCellIsHeader: true,
   head: [
