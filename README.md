@@ -13,6 +13,7 @@ A full stack, MVC web application with CRUD capability built using:
 ## Pre-requisites to run Web-App
 
 - Docker
+- Node (only required if running dev build)
 
 ## Configuration
 
