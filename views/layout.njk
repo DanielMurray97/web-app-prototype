@@ -15,24 +15,29 @@
     <script src="/html5-shiv/html5shiv.js"></script>
   <![endif]-->
 {% endblock %}
+
+{% block header %}
+  {{ govukHeader({
+    homepageUrl: "/",
+    containerClasses: "app-width-container",
+    serviceName: " Journal Web-App",
+    serviceUrl: "/",
+    navigation: [
+      {
+        href: "/data",
+        text: "View Notes",
+        active: true
+      },
+      {
+        href: "/form",
+        text: "Add a new note"
+      }
+    ]
+  }) }}
+{% endblock %}
+
 {% block content %}
-  <h1 class="govuk-heading-xl">Journal Web-App</h1>
-  {{ govukBreadcrumbs({
-  items: [
-    {
-      text: "Home",
-      href: "/"
-    },
-    {
-      text: "Data",
-      href: "data"
-    },
-    {
-      text: "Form",
-      href: "form"
-    }
-  ]
-}) }}
+
 
   {% block section %}{% endblock %}
 
