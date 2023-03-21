@@ -21,24 +21,24 @@
           <td class = "govuk-table__cell">{{element.full_name}}</td>
           <td class = "govuk-table__cell" >{{element.title}}</td>
           <td class = "govuk-table__cell" >{{element.journal_entry}}</td>
-          {% set url = ["/data/", element.journal_entry_id] | join %}
+          {% set editPageURL = ["/data/", element.journal_entry_id] | join %}
           <td class = " govuk-table__cell">
-            <form method="PUT" action={{url}}>
-             <button class = "govuk-button" data-module = "govuk-button" type="submit" style="text-decoration: none; color: white;" >Edit</button>
-            </button>
-          </td>
-          {% set url = ["/data/", element.journal_entry_id, "?_method=DELETE"] | join %}
-          <td class = "govuk-table__cell">
-            <form method="POST" action={{url}}>
-              <button class = "govuk-button" data-module = "govuk-button" type="submit" style="text-decoration: none; color: white;" >Delete</button>
+            <form action={{editPageURL}}>
+              <button class = "govuk-button" data-module = "govuk-button" type="submit" style="text-decoration: none; color: white;">Edit</button>
             </form>
-          </td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+            </td>
+              {% set url = ["/data/", element.journal_entry_id, "?_method=DELETE"] | join %}
+              <td class = "govuk-table__cell">
+                <form method="POST" action={{url}}>
+                  <button class = "govuk-button" data-module = "govuk-button" type="submit" style="text-decoration: none; color: white;" >Delete</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
 
-  {{ govukTable({
+      {{ govukTable({
   caption: "Postgres Data Table - Nunjucks Macro Table",
   captionClasses: "govuk-table__caption--m",
   firstCellIsHeader: true,
@@ -61,4 +61,4 @@
   
 }) }}
 
-{% endblock %}
+    {% endblock %}
