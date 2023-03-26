@@ -38,7 +38,7 @@
                 {% set deleteUrl = ["/data/", element.journal_entry_id, "?_method=DELETE"] | join %}
                 {# https://michaelheap.com/nunjucks-concatenate-string/ #}
                 <form method="POST" action={{deleteUrl}}>
-                  <button class = "govuk-button" type="submit" style="text-decoration: none; color: white;">Delete</button>
+                  <button class = "govuk-button" type="submit" style="text-decoration: none; color: white;">Cancel</button>
                 </form>
               </td>
             </tr>
