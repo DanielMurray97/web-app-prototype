@@ -3,64 +3,65 @@
 
 {% block section %}
 
-  <div style="font-size: 55px; margin-bottom: 20px">Postgres Data Table</div>
+ <div class = "govuk-heading-xl" style = "font-size: 2.5rem" >Here are your notes:</div>
 
-  <table style="border-collapse: separate; border: solid black 1px; border-spacing: 30px; margin-bottom: 20px;">
+  <table class = "govuk-table">
     <thead>
-      <tr style="text-align:center; font-weight: bold; font-size: 30px;">
+      <tr class = "govuk-table__header">
         <td>Journal Entry ID</td>
         <td>Full name</td>
         <td>Title</td>
         <td>Journal Entry</td>
       </tr>
     </thead>
-    <tbody>
+    <tbody class = "govuk-table__body">
       {% for element in rawData %}
         {% if id == element.journal_entry_id %}
           {% set editSubmitURL = ["/data/edit/", element.journal_entry_id, "?_method=PUT"] | join %}
           {# https://michaelheap.com/nunjucks-concatenate-string/ #}
           <form method="POST" action={{editSubmitURL}}>
-            <tr style="text-align:center; font-size: 25px;">
-              <td style="padding: 40px">{{element.journal_entry_id}}</td>
-              <td>
-                <input required value={{element.full_name}} name="full_name">
+            <tr class = "govuk-table__row">
+              <th scope = "row" class = "govuk-table__header">{{element.journal_entry_id}}</td>
+              <td class = "govuk-table__cell">
+                <input class = "govuk-input" required value={{element.full_name}} name="full_name">
               </td>
-              <td>
-                <input required value={{element.title}} name="title">
+              <td class = "govuk-table__cell">
+                <input class = "govuk-input" required value={{element.title}} name="title">
               </td>
-              <td>
-                <input required value={{element.journal_entry}} name="journal_entry">
+              <td class = "govuk-table__cell" style = "width:300px">
+               <textarea class="govuk-textarea" id="more-detail" name="journal_entry" rows= "10" cols = "10" required>{{element.journal_entry}}</textarea>
               </td>
-              <td>
-                <button type="submit" style="padding: 10px; background-color: lightblue;">Update</button>
+              <td class = "govuk-table__cell">
+                <button class = "govuk-button" type="submit" style="text-decoration: none; color: white;">Update</button>
               </td>
-              <td>
+              <td class = "govuk-table__cell">
                 {% set deleteUrl = ["/data/", element.journal_entry_id, "?_method=DELETE"] | join %}
                 {# https://michaelheap.com/nunjucks-concatenate-string/ #}
                 <form method="POST" action={{deleteUrl}}>
-                  <button type="submit" style="padding: 10px; background-color: pink;">Delete</button>
+                  <button class = "govuk-button" type="submit" style="text-decoration: none; color: white;">Cancel</button>
                 </form>
               </td>
             </tr>
           </form>
         {% else %}
-          <tr style="text-align:center; font-size: 25px;">
-            <td style="padding: 40px">{{element.journal_entry_id}}</td>
-            <td>{{element.full_name}}</td>
-            <td>{{element.title}}</td>
-            <td>{{element.journal_entry}}</td>
-            {% set editPageURL = ["/data/", element.journal_entry_id] | join %}
-            <td>
-              <button type="submit" style="padding: 10px; background-color: lightblue;">
-                <a style="text-decoration: none;" href={{editPageURL}}>Edit</a>
-              </button>
+          <tr class = "govuk-table__row">
+          <th scope = "row" class = "govuk-table__header">{{element.journal_entry_id}}</td>
+          <td class = "govuk-table__cell">{{element.full_name}}</td>
+          <td class = "govuk-table__cell" >{{element.title}}</td>
+          <td class = "govuk-table__cell" >{{element.journal_entry}}</td>
+          {% set editPageURL = ["/data/", element.journal_entry_id] | join %}
+          <td class = " govuk-table__cell">
+            <form action={{editPageURL}}>
+              <button class = "govuk-button" data-module = "govuk-button" type="submit" style="text-decoration: none; color: white;">Edit</button>
+            </form>
             </td>
-            <td>
-              <form method="POST" action={{deleteUrl}}>
-                <button type="submit" style="padding: 10px; background-color: pink;">Delete</button>
-              </form>
-            </td>
-          </tr>
+              {% set url = ["/data/", element.journal_entry_id, "?_method=DELETE"] | join %}
+              <td class = "govuk-table__cell">
+                <form method="POST" action={{url}}>
+                  <button class = "govuk-button" data-module = "govuk-button" type="submit" style="text-decoration: none; color: white;" >Delete</button>
+                </form>
+              </td>
+            </tr>
         {% endif %}
       {% endfor %}
     </tbody>
