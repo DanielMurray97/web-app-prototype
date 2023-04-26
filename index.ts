@@ -87,8 +87,8 @@ app.get('/data', async (req: Request, res: Response) => {
       transformedData: transformed_data,
       rawData: database_rows
     });
-  } catch (err: any) {
-    console.error(err.message);
+  } catch (err: unknown) {
+    console.error(err);
   }
 });
 
@@ -110,8 +110,8 @@ app.get('/data/:id', async (req: Request, res: Response) => {
       rawData: allJournal.rows,
       id: req.params.id,
     });
-  } catch (err: any) {
-    console.error(err.message);
+  } catch (err: unknown) {
+    console.error(err);
   }
 });
 
@@ -127,8 +127,8 @@ app.post('/form', async (req: Request, res: Response) => {
       [full_name, title, journal_entry]
     );
     res.render('form.njk', { layout: 'layout.njk' });
-  } catch (err: any) {
-    console.error(err.message);
+  } catch (err: unknown) {
+    console.error(err);
     res.redirect('/');
   }
 });
@@ -148,8 +148,8 @@ app.put('/data/edit/:id', async (req: Request, res: Response) => {
       [full_name, title, journal_entry, id]
     );
     res.redirect('/data');
-  } catch (err: any) {
-    console.error(err.message);
+  } catch (err: unknown) {
+    console.error(err);
     res.redirect('/');
   }
 });
@@ -165,8 +165,8 @@ app.delete('/data/:id', async (req: Request, res: Response) => {
       [journal_entry_id]
     );
     res.redirect('/data');
-  } catch (err: any) {
-    console.error(err.message);
+  } catch (err: unknown) {
+    console.error(err);
     res.redirect('/');
   }
 });
