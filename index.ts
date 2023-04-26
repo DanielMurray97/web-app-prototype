@@ -6,6 +6,8 @@ import connectLiveReload from 'connect-livereload';
 import bodyParser from 'body-parser';
 import { Pool } from 'pg';
 import methodOverride from 'method-override';
+import JournalDatapoint from './types/JournalDataPoint';
+import transformData from './utils/transformData';
 
 dotenv.config();
 
@@ -66,32 +68,23 @@ nunjucks.configure(['node_modules/govuk-frontend/', 'views'], {
 
 // Routes/Endpoints
 
+// Get routes
+
 app.get('/', async (req: Request, res: Response) => {
   res.render('layout.njk');
 });
-
-interface JournalDatapoint {
-  journal_entry_id: string
-  full_name: string
-  title: string
-  journal_entry: string
-}
-
-type JournalDataType = JournalDatapoint[];
-
-
 
 app.get('/data', async (req: Request, res: Response) => {
   try {
     const allJournal = await pool.query('SELECT * FROM journal_entry'); // https://youtu.be/ldYcgPKEZC8?t=1159
     console.log(allJournal.rows);
 
-    const database_rows: JournalDataType = allJournal.rows;
-    const transformedData = transform_data(database_rows);
+    const database_rows: JournalDatapoint[] = allJournal.rows;
+    const transformed_data = transformData(database_rows);
 
     res.render('data.njk', {
       layout: 'layout.njk',
-      transformedData: transformedData,
+      transformedData: transformed_data,
       rawData: database_rows
     });
   } catch (err: any) {
@@ -102,6 +95,27 @@ app.get('/data', async (req: Request, res: Response) => {
 app.get('/form', async (req: Request, res: Response) => {
   res.render('form.njk', { layout: 'layout.njk' });
 });
+
+app.get('/data/:id', async (req: Request, res: Response) => {
+  console.log('edit mode');
+  try {
+    const allJournal = await pool.query('SELECT * FROM journal_entry'); // https://youtu.be/ldYcgPKEZC8?t=1159
+    console.log(allJournal.rows);
+
+    const data = transformData(allJournal.rows);
+
+    res.render('edit.njk', {
+      layout: 'layout.njk',
+      transformedData: data,
+      rawData: allJournal.rows,
+      id: req.params.id,
+    });
+  } catch (err: any) {
+    console.error(err.message);
+  }
+});
+
+// Post route
 
 app.post('/form', async (req: Request, res: Response) => {
   try {
@@ -119,6 +133,29 @@ app.post('/form', async (req: Request, res: Response) => {
   }
 });
 
+// Put route
+
+app.put('/data/edit/:id', async (req: Request, res: Response) => {
+  try {
+    console.log('Edit request received');
+    const id = req.params.id;
+    const { full_name } = req.body; // de-structure body param as new variable name using { } syntax in one line
+    const { title } = req.body;
+    const { journal_entry } = req.body;
+
+    const newJournal = await pool.query(
+      `UPDATE journal_entry SET full_name = $1, title=$2, journal_entry=$3 WHERE journal_entry_id=$4;`,
+      [full_name, title, journal_entry, id]
+    );
+    res.redirect('/data');
+  } catch (err: any) {
+    console.error(err.message);
+    res.redirect('/');
+  }
+});
+
+// Delete route
+
 app.delete('/data/:id', async (req: Request, res: Response) => {
   try {
     console.log('Delete request received');
@@ -134,71 +171,12 @@ app.delete('/data/:id', async (req: Request, res: Response) => {
   }
 });
 
-app.get('/data/:id', async (req: Request, res: Response) => {
-  console.log('edit mode');
-  try {
-    const allJournal = await pool.query('SELECT * FROM journal_entry'); // https://youtu.be/ldYcgPKEZC8?t=1159
-    console.log(allJournal.rows);
-
-    const data = transform_data(allJournal.rows);
-
-    res.render('edit.njk', {
-      layout: 'layout.njk',
-      transformedData: data,
-      rawData: allJournal.rows,
-      id: req.params.id,
-    });
-  } catch (err: any) {
-    console.error(err.message);
-  }
-});
-
-app.put('/data/edit/:id', async (req: Request, res: Response) => {
-  try {
-    console.log('Edit request received');
-    const id = req.params.id;
-    const { full_name } = req.body;
-    const { title } = req.body;
-    const { journal_entry } = req.body;
-
-    const newJournal = await pool.query(
-      `UPDATE journal_entry SET full_name = $1, title=$2, journal_entry=$3 WHERE journal_entry_id=$4;`,
-      [full_name, title, journal_entry, id]
-    );
-    res.redirect('/data');
-  } catch (err: any) {
-    console.error(err.message);
-    res.redirect('/');
-  }
-});
-
 // Have server listen for requests on specified port
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });
 
-interface MacroDataShape {
-  text: string;
-}
-type MacroDataRow = MacroDataShape[];
-type MacroData = MacroDataRow[]
 
-function transform_data(postgres_data: JournalDataType) {
-
-  const transformed_data: MacroData = [];
-
-  postgres_data.forEach((element: JournalDatapoint) => {
-    const inner_arr: MacroDataRow = [
-      { text: element.journal_entry_id },
-      { text: element.full_name },
-      { text: element.title },
-      { text: element.journal_entry },
-    ];
-    transformed_data.push(inner_arr);
-  });
-
-  return transformed_data;
-}
 
 
