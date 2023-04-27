@@ -27,7 +27,7 @@ const pool = new Pool({
   host: process.env.POSTGRES_HOST,
   database: process.env.POSTGRES_DB,
   password: process.env.POSTGRES_PASSWORD,
-  port: 5432, // TS won't allow environment variable to be put here
+  port: process.env.PORT as number | undefined, // use assertation to override string | undefinded error. Could set process.env types globally to avoid this
 });
 
 // Check Postgres connection by running empty query
